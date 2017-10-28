@@ -420,8 +420,9 @@ public class PropertiesFileComparatorFrame extends JFrame implements
     {
       super.remove(offset, length);
       compare
-          .setEnabled(!(propertiesFile1.getText().length() == 0 || propertiesFile2
-              .getText().length() == 0));
+          .setEnabled(
+              !(propertiesFile1.getText().length() == 0 || propertiesFile2
+                  .getText().length() == 0));
     }
   }
 }

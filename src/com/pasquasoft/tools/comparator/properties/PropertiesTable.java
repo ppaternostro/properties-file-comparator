@@ -36,7 +36,7 @@ public class PropertiesTable extends JTable
     super(ptm);
 
     setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    
+
     /* Create custom sorter so we can apply a filter */
     sorter = new TableRowSorter<PropertiesTableModel>(ptm);
     setRowSorter(sorter);

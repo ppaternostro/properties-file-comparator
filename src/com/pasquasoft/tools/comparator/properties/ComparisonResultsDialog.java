@@ -84,7 +84,7 @@ public class ComparisonResultsDialog extends JDialog implements ActionListener
     setResizable(true);
 
     /* Center the dialog */
-    setLocationRelativeTo(null);
+    setLocationRelativeTo(owner);
 
     /* Show the dialog */
     setVisible(true);
