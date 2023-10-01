@@ -1,7 +1,7 @@
 # properties-file-comparator
 A properties file comparator utility.
 
-This application allows the user to choose two different properties files to compare those files' key values. 
+This application allows the user to choose two different properties files in order to compare those files' key values. 
 
 Upon application startup you will be presented with the following window:
 
@@ -14,5 +14,7 @@ Select each properties file by clicking the folder icon. Once both files have be
 The comparison results are displayed via a table. If the key values are different, or if a key exists in one file and not the other, the row will be red highlighted with the different key values displayed for each file. If the key values are the same, the row will be green highlighted. You can choose to only display the key value differences to reduce the output noise via the **Only show differences** check box. 
 
 ![Only Differences](https://github.com/ppaternostro/properties-file-comparator/assets/32653184/c97141b6-cbe4-414e-af2a-51cb2c7ae73d)
+
+Clicking on the table column headers sorts the data in ascending/descending order based on that column's data. The data is automatically sorted by key name in ascending order (note the black triangle icon in the **Key** column header).
 
 The **Save...** button allows the user to persist the comparison results via a comma separated value (CSV) file.
