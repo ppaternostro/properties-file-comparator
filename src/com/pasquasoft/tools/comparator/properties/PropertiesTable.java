@@ -27,9 +27,9 @@ public class PropertiesTable extends JTable
   private TableRowSorter<PropertiesTableModel> sorter;
 
   /**
-   * Constructs a table with the specified table model.
+   * Constructs a table with the specified properties table model.
    * 
-   * @param tm the table model
+   * @param ptm the properties table model
    */
   public PropertiesTable(PropertiesTableModel ptm)
   {
@@ -48,8 +48,7 @@ public class PropertiesTable extends JTable
   }
 
   @Override
-  public Component prepareRenderer(TableCellRenderer renderer, int row,
-      int column)
+  public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
   {
     Component component = super.prepareRenderer(renderer, row, column);
 
@@ -59,8 +58,7 @@ public class PropertiesTable extends JTable
       int modelRow = convertRowIndexToModel(row);
       String value1 = (String) getModel().getValueAt(modelRow, 1);
       String value2 = (String) getModel().getValueAt(modelRow, 2);
-      component.setBackground(value1.equalsIgnoreCase(value2) ? Color.GREEN
-          : Color.RED);
+      component.setBackground(value1 != null && value1.equalsIgnoreCase(value2) ? Color.GREEN : Color.RED);
     }
 
     return component;

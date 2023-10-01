@@ -13,10 +13,12 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -38,8 +40,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-public class PropertiesFileComparatorFrame extends JFrame implements
-    ActionListener
+public class PropertiesFileComparatorFrame extends JFrame implements ActionListener
 {
   /**
    * Generated serial version UID.
@@ -80,8 +81,7 @@ public class PropertiesFileComparatorFrame extends JFrame implements
 
     prefs = Preferences.userNodeForPackage(PropertiesFileComparatorFrame.class);
 
-    UIManager.LookAndFeelInfo[] installedLooks = UIManager
-        .getInstalledLookAndFeels();
+    UIManager.LookAndFeelInfo[] installedLooks = UIManager.getInstalledLookAndFeels();
 
     looks = new JRadioButtonMenuItem[installedLooks.length];
 
@@ -152,13 +152,11 @@ public class PropertiesFileComparatorFrame extends JFrame implements
       }
     });
 
-    ImageIcon openIcon = new ImageIcon(
-        ClassLoader.getSystemResource("images/open.gif"));
+    ImageIcon openIcon = new ImageIcon(ClassLoader.getSystemResource("images/open.gif"));
     openPropertiesFile1.setIcon(openIcon);
     openPropertiesFile2.setIcon(openIcon);
 
-    ImageIcon compareIcon = new ImageIcon(
-        ClassLoader.getSystemResource("images/compare.png"));
+    ImageIcon compareIcon = new ImageIcon(ClassLoader.getSystemResource("images/compare.png"));
     setIconImage(compareIcon.getImage());
 
     compare.addActionListener(this);
@@ -234,7 +232,9 @@ public class PropertiesFileComparatorFrame extends JFrame implements
         prop1.load(fis1);
         prop2.load(fis2);
 
-        Enumeration<?> enum1 = prop1.propertyNames();
+        Set<Object> prop1Keys = prop1.keySet();
+        Set<Object> prop2Keys = prop2.keySet();
+        Set<Object> keys = Stream.concat(prop1Keys.stream(), prop2Keys.stream()).collect(Collectors.toSet());
 
         Vector<Vector<String>> data = new Vector<Vector<String>>();
         Vector<String> columnNames = new Vector<String>();
@@ -243,27 +243,24 @@ public class PropertiesFileComparatorFrame extends JFrame implements
         columnNames.add("Properties File #1");
         columnNames.add("Properties File #2");
 
-        while (enum1.hasMoreElements())
-        {
+        keys.forEach(key -> {
           Vector<String> row = new Vector<String>();
-          String key = (String) enum1.nextElement();
 
-          row.add(key);
-          row.add(prop1.getProperty(key));
-          row.add(prop2.getProperty(key));
+          String keyStr = (String) key;
+
+          row.add(keyStr);
+          row.add(prop1.getProperty(keyStr));
+          row.add(prop2.getProperty(keyStr));
 
           data.add(row);
-        }
+        });
 
-        new ComparisonResultsDialog(PropertiesFileComparatorFrame.this,
-            columnNames, data);
+        new ComparisonResultsDialog(PropertiesFileComparatorFrame.this, columnNames, data);
       }
       catch (IOException ioe)
       {
-        message = "Problem reading properties files" + NEW_LINE
-            + ioe.getMessage();
-        JOptionPane.showMessageDialog(this, message, "Error",
-            JOptionPane.ERROR_MESSAGE);
+        message = "Problem reading properties files" + NEW_LINE + ioe.getMessage();
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
       }
       finally
       {
@@ -298,10 +295,9 @@ public class PropertiesFileComparatorFrame extends JFrame implements
     }
     else if (obj == about)
     {
-      message = "Properties File Comparator" + NEW_LINE
-          + "Compares properties key values" + NEW_LINE + "Pat Paternostro";
-      JOptionPane.showMessageDialog(this, message,
-          "About Properties File Comparator", JOptionPane.INFORMATION_MESSAGE);
+      message = "Properties File Comparator" + NEW_LINE + "Compares properties key values" + NEW_LINE
+          + "Pat Paternostro";
+      JOptionPane.showMessageDialog(this, message, "About Properties File Comparator", JOptionPane.INFORMATION_MESSAGE);
     }
     else if (obj instanceof JRadioButtonMenuItem)
     {
@@ -315,15 +311,14 @@ public class PropertiesFileComparatorFrame extends JFrame implements
         UIManager.setLookAndFeel(ab.getActionCommand());
         prefs.put(LOOK_AND_FEEL, ab.getText());
         prefs.flush();
-        SwingUtilities
-            .updateComponentTreeUI(PropertiesFileComparatorFrame.this);
+        SwingUtilities.updateComponentTreeUI(PropertiesFileComparatorFrame.this);
         setButtonsSize();
         pack();
       }
       catch (final Throwable th)
       {
-        JOptionPane.showMessageDialog(PropertiesFileComparatorFrame.this,
-            th.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(PropertiesFileComparatorFrame.this, th.getMessage(), "Error",
+            JOptionPane.ERROR_MESSAGE);
       }
     }
   }
@@ -353,8 +348,7 @@ public class PropertiesFileComparatorFrame extends JFrame implements
     /* Disable the "All files" option */
     fc.setAcceptAllFileFilterUsed(false);
 
-    fc.addChoosableFileFilter(new FileNameExtensionFilter(
-        "Java Properties Files (*.properties)", "properties"));
+    fc.addChoosableFileFilter(new FileNameExtensionFilter("Java Properties Files (*.properties)", "properties"));
 
     disableTextField(fc);
 
@@ -407,22 +401,17 @@ public class PropertiesFileComparatorFrame extends JFrame implements
     private static final long serialVersionUID = 1238084251315036604L;
 
     @Override
-    public void insertString(int offs, String str, AttributeSet a)
-        throws BadLocationException
+    public void insertString(int offs, String str, AttributeSet a) throws BadLocationException
     {
       super.insertString(offs, str, a);
-      compare.setEnabled(propertiesFile1.getText().length() != 0
-          && propertiesFile2.getText().length() != 0);
+      compare.setEnabled(propertiesFile1.getText().length() != 0 && propertiesFile2.getText().length() != 0);
     }
 
     @Override
     public void remove(int offset, int length) throws BadLocationException
     {
       super.remove(offset, length);
-      compare
-          .setEnabled(
-              !(propertiesFile1.getText().length() == 0 || propertiesFile2
-                  .getText().length() == 0));
+      compare.setEnabled(!(propertiesFile1.getText().length() == 0 || propertiesFile2.getText().length() == 0));
     }
   }
 }

@@ -19,7 +19,7 @@ public class PropertiesTableModel extends DefaultTableModel
    * @param data the data
    * @param columnNames the column names
    */
-  public PropertiesTableModel(Vector<?> data, Vector<?> columnNames)
+  public PropertiesTableModel(Vector<? extends Vector<?>> data, Vector<?> columnNames)
   {
     super(data, columnNames);
   }

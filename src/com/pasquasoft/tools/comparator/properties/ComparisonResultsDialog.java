@@ -39,8 +39,7 @@ public class ComparisonResultsDialog extends JDialog implements ActionListener
 
   private PropertiesTable table;
 
-  public ComparisonResultsDialog(Frame owner, Vector<String> columnNames,
-      Vector<Vector<String>> data)
+  public ComparisonResultsDialog(Frame owner, Vector<String> columnNames, Vector<Vector<String>> data)
   {
     super(owner, "Comparison Results", true);
 
@@ -103,8 +102,8 @@ public class ComparisonResultsDialog extends JDialog implements ActionListener
       }
       catch (Throwable th)
       {
-        JOptionPane.showMessageDialog(ComparisonResultsDialog.this,
-            th.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(ComparisonResultsDialog.this, th.getMessage(), "Error",
+            JOptionPane.ERROR_MESSAGE);
       }
     }
     else if (obj == close)
@@ -131,8 +130,7 @@ public class ComparisonResultsDialog extends JDialog implements ActionListener
   private void applyDifferencesOnlyFilter()
   {
     RowFilter<PropertiesTableModel, Object> rowFilter = new RowFilter<PropertiesTableModel, Object>() {
-      public boolean include(
-          Entry<? extends PropertiesTableModel, ? extends Object> entry)
+      public boolean include(Entry<? extends PropertiesTableModel, ? extends Object> entry)
       {
         int row = (Integer) entry.getIdentifier();
         row = table.convertRowIndexToView(row);
@@ -140,7 +138,8 @@ public class ComparisonResultsDialog extends JDialog implements ActionListener
         String value1 = (String) table.getValueAt(row, 1);
         String value2 = (String) table.getValueAt(row, 2);
 
-        return !value1.equalsIgnoreCase(value2);
+        return (value1 != null && !value1.equalsIgnoreCase(value2))
+            || (value2 != null && !value2.equalsIgnoreCase(value1));
       }
     };
 
