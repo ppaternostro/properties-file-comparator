@@ -314,6 +314,9 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
         SwingUtilities.updateComponentTreeUI(PropertiesFileComparatorFrame.this);
         setButtonsSize();
         pack();
+
+        // Re-center after look and feel change
+        setLocationRelativeTo(null);
       }
       catch (final Throwable th)
       {
