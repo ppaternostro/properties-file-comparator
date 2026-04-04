@@ -6,6 +6,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -303,6 +304,9 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
     {
       try
       {
+        // Retrieve current window location
+        Point current = getLocation();
+        
         /*
          * The radio button menu item's action command was set to the associated
          * Look and Feel class name in the constructor.
@@ -315,8 +319,8 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
         setButtonsSize();
         pack();
 
-        // Re-center after look and feel change
-        setLocationRelativeTo(null);
+        // Set to current location after look and feel change
+        setLocation(current);
       }
       catch (final Throwable th)
       {
