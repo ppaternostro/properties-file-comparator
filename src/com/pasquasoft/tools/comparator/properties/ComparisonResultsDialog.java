@@ -66,6 +66,7 @@ public class ComparisonResultsDialog extends JDialog implements ActionListener
 
     /* Add the window listener */
     addWindowListener(new WindowAdapter() {
+      @Override
       public void windowClosing(WindowEvent evt)
       {
         dispose();
@@ -130,6 +131,7 @@ public class ComparisonResultsDialog extends JDialog implements ActionListener
   private void applyDifferencesOnlyFilter()
   {
     RowFilter<PropertiesTableModel, Object> rowFilter = new RowFilter<PropertiesTableModel, Object>() {
+      @Override
       public boolean include(Entry<? extends PropertiesTableModel, ? extends Object> entry)
       {
         int row = (Integer) entry.getIdentifier();
@@ -186,7 +188,7 @@ public class ComparisonResultsDialog extends JDialog implements ActionListener
           String value1 = (String) table.getValueAt(row, 1);
           String value2 = (String) table.getValueAt(row, 2);
 
-          pw.println(value1.equalsIgnoreCase(value2) ? "same" : "different");
+          pw.println(safeEqualsIgnoreCase(value1, value2) ? "same" : "different");
         }
       }
       finally
@@ -197,5 +199,21 @@ public class ComparisonResultsDialog extends JDialog implements ActionListener
         }
       }
     }
+  }
+
+  private boolean safeEqualsIgnoreCase(String str1, String str2)
+  {
+    if (str1 == str2)
+    {
+      return true;
+    }
+
+    if (str1 == null || str2 == null)
+    {
+      return false;
+    }
+
+    // Safe to call equalsIgnoreCase now
+    return str1.equalsIgnoreCase(str2);
   }
 }
