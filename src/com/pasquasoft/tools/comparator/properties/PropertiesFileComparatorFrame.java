@@ -41,6 +41,9 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import org.springframework.core.io.InputStreamResource;
+
 public class PropertiesFileComparatorFrame extends JFrame implements ActionListener
 {
   /**
@@ -123,11 +126,11 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
     compare.setEnabled(false);
 
     /* Add components to panels */
-    row1.add(new JLabel("Properties File #1: "));
+    row1.add(new JLabel("Properties/YML File #1: "));
     row1.add(propertiesFile1);
     row1.add(openPropertiesFile1);
 
-    row2.add(new JLabel("Properties File #2: "));
+    row2.add(new JLabel("Properties/YML File #2: "));
     row2.add(propertiesFile2);
     row2.add(openPropertiesFile2);
 
@@ -146,6 +149,7 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
 
     /* Add the listeners */
     addWindowListener(new WindowAdapter() {
+      @Override
       public void windowClosing(WindowEvent evt)
       {
         dispose();
@@ -203,6 +207,7 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
     setVisible(true);
   }
 
+  @Override
   public void actionPerformed(ActionEvent evt)
   {
     Object obj = evt.getSource();
@@ -224,14 +229,14 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
 
       try
       {
-        fis1 = new FileInputStream(propertiesFile1.getText());
-        fis2 = new FileInputStream(propertiesFile2.getText());
+        String fileName1 = propertiesFile1.getText();
+        String fileName2 = propertiesFile2.getText();
 
-        Properties prop1 = new Properties();
-        Properties prop2 = new Properties();
+        fis1 = new FileInputStream(fileName1);
+        fis2 = new FileInputStream(fileName2);
 
-        prop1.load(fis1);
-        prop2.load(fis2);
+        Properties prop1 = retrieveProperties(fileName1, fis1);
+        Properties prop2 = retrieveProperties(fileName2, fis2);
 
         Set<Object> prop1Keys = prop1.keySet();
         Set<Object> prop2Keys = prop2.keySet();
@@ -241,8 +246,8 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
         Vector<String> columnNames = new Vector<String>();
 
         columnNames.add("Key");
-        columnNames.add("Properties File #1");
-        columnNames.add("Properties File #2");
+        columnNames.add("Properties/YML File #1");
+        columnNames.add("Properties/YML File #2");
 
         keys.forEach(key -> {
           Vector<String> row = new Vector<String>();
@@ -260,7 +265,7 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
       }
       catch (IOException ioe)
       {
-        message = "Problem reading properties files" + NEW_LINE + ioe.getMessage();
+        message = "Problem reading properties/YML files" + NEW_LINE + ioe.getMessage();
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
       }
       finally
@@ -296,9 +301,10 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
     }
     else if (obj == about)
     {
-      message = "Properties File Comparator" + NEW_LINE + "Compares properties key values" + NEW_LINE
+      message = "Properties/YML File Comparator" + NEW_LINE + "Compares properties/YML key values" + NEW_LINE
           + "Pat Paternostro";
-      JOptionPane.showMessageDialog(this, message, "About Properties File Comparator", JOptionPane.INFORMATION_MESSAGE);
+      JOptionPane.showMessageDialog(this, message, "About Properties/YML File Comparator",
+          JOptionPane.INFORMATION_MESSAGE);
     }
     else if (obj instanceof JRadioButtonMenuItem)
     {
@@ -306,7 +312,7 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
       {
         // Retrieve current window location
         Point current = getLocation();
-        
+
         /*
          * The radio button menu item's action command was set to the associated
          * Look and Feel class name in the constructor.
@@ -328,6 +334,31 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
             JOptionPane.ERROR_MESSAGE);
       }
     }
+  }
+
+  private Properties retrieveProperties(String fileName, FileInputStream fis) throws IOException
+  {
+    Properties prop = null;
+
+    if (fileName.endsWith(".yml"))
+    {
+      YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
+
+      // Wrap the opened stream directly into Spring's Resource adapter
+      factory.setResources(new InputStreamResource(fis));
+
+      // Trigger the internal parsing and flattening logic
+      factory.afterPropertiesSet();
+
+      prop = factory.getObject();
+    }
+    else if (fileName.endsWith(".properties"))
+    {
+      prop = new Properties();
+      prop.load(fis);
+    }
+
+    return prop;
   }
 
   /**
@@ -355,7 +386,8 @@ public class PropertiesFileComparatorFrame extends JFrame implements ActionListe
     /* Disable the "All files" option */
     fc.setAcceptAllFileFilterUsed(false);
 
-    fc.addChoosableFileFilter(new FileNameExtensionFilter("Java Properties Files (*.properties)", "properties"));
+    fc.addChoosableFileFilter(
+        new FileNameExtensionFilter("Java Properties/YML Files (*.properties, *.yml)", "properties", "yml"));
 
     disableTextField(fc);
 
